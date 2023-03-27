@@ -22,7 +22,7 @@ public class InitService {
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         System.out.println("Running simple database request...");
-        exampleRepository.save(new ExampleEntity("My dummy text"));
+        exampleRepository.save(ExampleEntity.builder().exampleColumn("My dummy text").build());
         List<ExampleEntity> exampleEntities = exampleRepository.findAll();
         exampleEntities.forEach(e -> System.out.println(e.getExampleColumn()));
     }

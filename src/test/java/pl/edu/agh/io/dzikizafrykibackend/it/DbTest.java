@@ -22,7 +22,7 @@ public class DbTest extends BaseIT {
     void shouldReturnHealthyStatus() {
         // given
         String str = "Hello World";
-        exampleRepository.save(new ExampleEntity(str));
+        exampleRepository.save(ExampleEntity.builder().exampleColumn(str).build());
 
         // when
         ExampleEntity entity = exampleRepository.findAll().get(0);

@@ -1,7 +1,7 @@
 package pl.edu.agh.io.dzikizafrykibackend.it;
 
 import org.junit.jupiter.api.Test;
-import pl.edu.agh.io.dzikizafrykibackend.model.ImmutableHealthResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.HealthResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,11 +12,11 @@ public class HealthTest extends BaseIT {
     @Test
     void shouldReturnHealthyStatus() {
         // when
-        ImmutableHealthResource health = restTemplate.getForObject(HEALTH_ENDPOINT, ImmutableHealthResource.class);
+        HealthResource health = restTemplate.getForObject(HEALTH_ENDPOINT, HealthResource.class);
 
         // then
         assertThat(health).isNotNull();
-        assertThat(health.isHealthy()).isTrue();
+        assertThat(health.getHealthy()).isTrue();
         assertThat(health.getMessage()).isNotEmpty();
     }
 }
