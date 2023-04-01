@@ -5,14 +5,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 
 import javax.xml.bind.DatatypeConverter;
 import java.time.Duration;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -27,6 +27,10 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims) {
         long timeNow = System.currentTimeMillis();
+
+        GrantedAuthority userRole = List.<GrantedAuthority>copyOf(userDetails.getAuthorities()).get(0);
+        extraClaims.put("role", UserRole.getEnum(userRole.getAuthority()));
+
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())

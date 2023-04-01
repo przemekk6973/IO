@@ -11,14 +11,20 @@ import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 @RequestMapping("/demo-security")
 public class DemoSecurityController {
 
-    @GetMapping("/secured-endpoint")
+    @GetMapping("/teacher-secured-endpoint")
     @Secured({UserRole.ROLE_TEACHER})
-    public ResponseEntity<String> getDemoSecurityHello() {
-        return ResponseEntity.ok("Hello!");
+    public ResponseEntity<String> getDemoTeacherSecuredHello() {
+        return ResponseEntity.ok("Hello teacher!");
+    }
+
+    @GetMapping("/student-secured-endpoint")
+    @Secured({UserRole.ROLE_STUDENT})
+    public ResponseEntity<String> getDemoStudentSecuredHello() {
+        return ResponseEntity.ok("Hello student!");
     }
 
     @GetMapping("/not-secured-endpoint")
     public ResponseEntity<String> getDemoNotSecurityHello() {
-        return ResponseEntity.ok("Hello!");
+        return ResponseEntity.ok("Hello stranger!");
     }
 }

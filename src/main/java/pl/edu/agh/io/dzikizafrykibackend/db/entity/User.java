@@ -54,7 +54,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Here a full role name is required, to force spring to not interpret it as an Authority
-        return List.of(new SimpleGrantedAuthority(role.getFullRoleName()));
+        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
     }
 
     @Override
