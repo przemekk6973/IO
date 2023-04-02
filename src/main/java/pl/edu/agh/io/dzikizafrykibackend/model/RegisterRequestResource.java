@@ -1,31 +1,39 @@
 package pl.edu.agh.io.dzikizafrykibackend.model;
 
 
-import lombok.*;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
+
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequestResource {
 
-    @NonNull
+    @Email
     private String email;
 
-    @NonNull
+    @NotNull
     private String firstname;
 
-    @NonNull
+    @NotNull
     private String lastname;
 
-    @NonNull
+    @NotNull
     private String password;
 
-    @NonNull
+    @NotNull
     private UserRole role;
 
-    @Nullable
-    private int indexNumber;
+    @DecimalMin("0")
+    @DecimalMax("999999")
+    private Integer indexNumber;
 }

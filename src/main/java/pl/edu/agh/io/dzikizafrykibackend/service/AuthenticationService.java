@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
-import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationRequestResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationResponseResource;
@@ -33,7 +32,8 @@ public class AuthenticationService {
         User newUser = new User(registerRequestResource.getEmail(),
                                 registerRequestResource.getFirstname(),
                                 registerRequestResource.getLastname(),
-                                UserRole.TEACHER,
+                                registerRequestResource.getRole(),
+                                registerRequestResource.getIndexNumber(),
                                 true,
                                 passwordEncoder.encode(registerRequestResource.getPassword()));
 

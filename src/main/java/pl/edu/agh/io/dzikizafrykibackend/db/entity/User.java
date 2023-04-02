@@ -1,12 +1,14 @@
 package pl.edu.agh.io.dzikizafrykibackend.db.entity;
 
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -21,34 +23,51 @@ public class User implements UserDetails {
     @GeneratedValue
     private UUID id;
 
-    @Column
+    @Column(unique=true)
+    @NotNull
     private String email;
 
     @Column
+    @NotNull
     private String firstname;
 
     @Column
+    @NotNull
     private String lastname;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private UserRole role;
 
-    @Column
-    private boolean isVerified;
+    @Column(unique=true)
+    private Integer indexNumber;
 
     @Column
+    @NotNull
+    private Boolean isVerified;
+
+    @Column
+    @NotNull
     private String hashedPassword;
 
-    public User(String email, String firstname, String lastname, UserRole role, boolean isVerified, String hashedPassword) {
+    public User(
+            String email,
+            String firstname,
+            String lastname,
+            UserRole role,
+            Integer indexNumber,
+            Boolean isVerified,
+            String hashedPassword
+    ) {
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.role = role;
+        this.indexNumber = indexNumber;
         this.isVerified = isVerified;
         this.hashedPassword = hashedPassword;
     }
-
 
 
     @Override
