@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -29,11 +30,11 @@ public class User implements UserDetails {
 
     @Column
     @NotNull
-    private String firstname;
+    private String firstName;
 
     @Column
     @NotNull
-    private String lastname;
+    private String lastName;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -51,18 +52,29 @@ public class User implements UserDetails {
     @NotNull
     private String hashedPassword;
 
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
+    Set<CourseEntity> userCourses;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "dates_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "date_id")
+    )
+    Set<DateEntity> userDates;
+
     public User(
             String email,
-            String firstname,
-            String lastname,
+            String firstName,
+            String lastName,
             UserRole role,
             Integer indexNumber,
             Boolean isVerified,
             String hashedPassword
     ) {
         this.email = email;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.role = role;
         this.indexNumber = indexNumber;
         this.isVerified = isVerified;
