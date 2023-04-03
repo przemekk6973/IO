@@ -10,6 +10,8 @@ import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationResponseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.RegisterRequestResource;
 import pl.edu.agh.io.dzikizafrykibackend.service.AuthenticationService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -23,7 +25,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     private AuthenticationResponseResource register(
-            @RequestBody RegisterRequestResource registerRequestResource
+            @RequestBody @Valid RegisterRequestResource registerRequestResource
     ) {
         return authenticationService.register(registerRequestResource);
     }
