@@ -3,16 +3,16 @@ package pl.edu.agh.io.dzikizafrykibackend.it;
 import org.junit.jupiter.api.Test;
 import pl.edu.agh.io.dzikizafrykibackend.model.HealthResource;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HealthTest extends BaseIT {
 
-    private static final String HEALTH_ENDPOINT = "/health";
-
     @Test
-    void shouldReturnHealthyStatus() {
+    void shouldReturnHealthyStatus() throws IOException {
         // when
-        HealthResource health = restTemplate.getForObject(HEALTH_ENDPOINT, HealthResource.class);
+        HealthResource health = retrofitClient().getHealth().execute().body();
 
         // then
         assertThat(health).isNotNull();
