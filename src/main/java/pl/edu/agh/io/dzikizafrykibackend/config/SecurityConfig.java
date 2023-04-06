@@ -32,7 +32,13 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .antMatchers("/auth/**", "/health/**", "/demo-security/not-secured-endpoint").permitAll()
+                .antMatchers(
+                        "/auth/**",
+                        "/health/**",
+                        "/demo-security/not-secured-endpoint",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**"
+                ).permitAll()
 //                 Here a short role name is required, because spring will add "ROLE_" prefix
 //                .antMatchers("/demo-security/secured-endpoint").hasRole(UserRole.TEACHER.name())
                 .anyRequest().authenticated()

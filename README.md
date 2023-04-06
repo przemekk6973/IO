@@ -51,6 +51,11 @@ docker stop postgres-dza-db
 docker rm postgres-dza-db
 ```
 
+### Swagger
+
+* http://localhost:8080/swagger-ui/index.html
+* http://localhost:8080/v3/api-docs/
+
 
 ## References
 
@@ -83,4 +88,5 @@ The following guides illustrate how to use some features concretely:
 * [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
 * [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
 * [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+* [Swagger configuration](https://www.baeldung.com/spring-rest-openapi-documentation)
 
