@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
-import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationRequestResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationResponseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.RegisterRequestResource;
@@ -12,9 +11,6 @@ import pl.edu.agh.io.dzikizafrykibackend.model.RegisterRequestResource;
 import java.io.IOException;
 
 public class AuthenticationIT extends BaseIT {
-
-    private final static String EMAIL = "example@example.com";
-    private final static String PASSWORD = "strong_password123";
 
     @BeforeEach
     public void setup() {
@@ -28,9 +24,9 @@ public class AuthenticationIT extends BaseIT {
                 .firstname("Jan")
                 .lastname("Kowalski")
                 .indexNumber(null)
-                .email(EMAIL)
-                .password(PASSWORD)
-                .role(UserRole.TEACHER)
+                .email(STUDENT1_ID.email())
+                .password(STUDENT1_ID.password())
+                .role(STUDENT1_ID.role())
                 .build();
 
         // when
@@ -41,28 +37,20 @@ public class AuthenticationIT extends BaseIT {
         Assertions.assertThat(authenticationResponseResource).isNotNull();
         Assertions.assertThat(authenticationResponseResource.jwt).isNotEmpty();
 
-        User user = dsl().getUserRepository().findByEmail(EMAIL).orElse(null);
+        User user = dsl().getUserRepository().findByEmail(STUDENT1_ID.email()).orElse(null);
         Assertions.assertThat(user).isNotNull();
-        Assertions.assertThat(user.getEmail()).isEqualTo(EMAIL);
+        Assertions.assertThat(user.getEmail()).isEqualTo(STUDENT1_ID.email());
     }
 
     @Test
     void shouldAuthenticateAlreadyCreatedUser() throws IOException {
         // given
-        RegisterRequestResource registerRequestResource = RegisterRequestResource.builder()
-                .firstname("Jan")
-                .lastname("Kowalski")
-                .indexNumber(null)
-                .email(EMAIL)
-                .password(PASSWORD)
-                .role(UserRole.TEACHER)
-                .build();
-        retrofitClient().postRegister(registerRequestResource).execute().body();
+        dsl().setupUser(STUDENT1_ID);
 
         // when
         AuthenticationRequestResource authenticationRequestResource = AuthenticationRequestResource.builder()
-                .email(EMAIL)
-                .password(PASSWORD)
+                .email(STUDENT1_ID.email())
+                .password(STUDENT1_ID.password())
                 .build();
 
         AuthenticationResponseResource authenticationResponseResource =
@@ -71,9 +59,9 @@ public class AuthenticationIT extends BaseIT {
         Assertions.assertThat(authenticationResponseResource).isNotNull();
         Assertions.assertThat(authenticationResponseResource.jwt).isNotEmpty();
 
-        User user = dsl().getUserRepository().findByEmail(EMAIL).orElse(null);
+        User user = dsl().getUserRepository().findByEmail(STUDENT1_ID.email()).orElse(null);
         Assertions.assertThat(user).isNotNull();
-        Assertions.assertThat(user.getEmail()).isEqualTo(EMAIL);
+        Assertions.assertThat(user.getEmail()).isEqualTo(STUDENT1_ID.email());
     }
 
 

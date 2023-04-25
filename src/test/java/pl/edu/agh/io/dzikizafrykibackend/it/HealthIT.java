@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HealthTest extends BaseIT {
+public class HealthIT extends BaseIT {
 
     @Test
     void shouldReturnHealthyStatus() throws IOException {

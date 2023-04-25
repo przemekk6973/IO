@@ -1,16 +1,34 @@
 package pl.edu.agh.io.dzikizafrykibackend.it.dsl;
 
+
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
+import pl.edu.agh.io.dzikizafrykibackend.it.client.Retrofit2ClientFactory;
+import pl.edu.agh.io.dzikizafrykibackend.it.client.RetrofitClient;
+
+import java.io.IOException;
 
 public class TestDsl {
 
+    private final int port;
     private final UserRepository userRepository;
-
     private final IdentityProviderDsl identityProvider;
 
-    public TestDsl(UserRepository userRepository) {
+    public TestDsl(int port, UserRepository userRepository) {
+        this.port = port;
         this.userRepository = userRepository;
-        this.identityProvider = new IdentityProviderDsl(userRepository);
+        this.identityProvider = new IdentityProviderDsl(
+                userRepository,
+                new Retrofit2ClientFactory(port).createClient()
+        );
+    }
+
+    public void setupUser(IdentityProviderDsl.UserIdentity userIdentity) throws IOException {
+        identityProvider.register(userIdentity);
+    }
+
+    public RetrofitClient useClientAsUser(IdentityProviderDsl.UserIdentity userIdentity) throws IOException {
+        String jwt = identityProvider.authenticate(userIdentity);
+        return new Retrofit2ClientFactory(port).withAuthorization(jwt).createClient();
     }
 
     public void purgeEntities() {
@@ -19,5 +37,9 @@ public class TestDsl {
 
     public UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    public IdentityProviderDsl getIdentityProvider() {
+        return identityProvider;
     }
 }

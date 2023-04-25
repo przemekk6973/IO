@@ -8,8 +8,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.lifecycle.Startables;
 import pl.edu.agh.io.dzikizafrykibackend.BackendApplication;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.it.client.RetrofitClient;
+import pl.edu.agh.io.dzikizafrykibackend.it.dsl.IdentityProviderDsl;
 import pl.edu.agh.io.dzikizafrykibackend.it.dsl.TestDsl;
 
 @SpringBootTest(
@@ -17,6 +19,16 @@ import pl.edu.agh.io.dzikizafrykibackend.it.dsl.TestDsl;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public class BaseIT {
+
+    protected static final IdentityProviderDsl.UserIdentity STUDENT1_ID = new IdentityProviderDsl.UserIdentity(
+            "student1@example.com", "student1_passwd", UserRole.STUDENT
+    );
+    protected static final IdentityProviderDsl.UserIdentity STUDENT2_ID = new IdentityProviderDsl.UserIdentity(
+            "student2@example.com", "student2_passwd", UserRole.STUDENT
+    );
+    protected static final IdentityProviderDsl.UserIdentity TEACHER1_ID = new IdentityProviderDsl.UserIdentity(
+            "teacher@example.com", "teacher_passwd", UserRole.TEACHER
+    );
 
     private final static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15");
 
@@ -40,6 +52,7 @@ public class BaseIT {
 
     protected TestDsl dsl() {
         return new TestDsl(
+                port,
                 userRepository
         );
     }

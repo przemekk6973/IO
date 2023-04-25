@@ -18,7 +18,11 @@ public interface RetrofitClient {
     Call<AuthenticationResponseResource> postRegister(@Body RegisterRequestResource registerRequestResource);
 
     @POST("/auth/authenticate")
-    Call<AuthenticationResponseResource> postAuthenticate(
-            @Body AuthenticationRequestResource authenticationRequestResource
-    );
+    Call<AuthenticationResponseResource> postAuthenticate(@Body AuthenticationRequestResource authenticationRequestResource);
+
+    @GET("/demo-security/teacher-secured-endpoint")
+    Call<String> getDemoTeacherSecuredHello();
+
+    @GET("/demo-security/student-secured-endpoint")
+    Call<String> getDemoStudentSecuredHello();
 }
