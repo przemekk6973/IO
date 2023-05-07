@@ -16,7 +16,6 @@ import pl.edu.agh.io.dzikizafrykibackend.exception.InvalidOwnerException;
 import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseUpdate;
 import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
-import pl.edu.agh.io.dzikizafrykibackend.util.CodeGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,19 +23,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CourseService {
-    private static final Set<User> EMPTY_USER_SET = Set.of();
-    private static final Set<DateEntity> EMPTY_DATE_SET = Set.of();
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final DateRepository dateRepository;
 
-    private final CodeGenerator codeGenerator;
-
     @Transactional
     public Course getCourse(UUID courseId) {
-        Optional<CourseEntity> course = courseRepository.findById(courseId);
-        return course.map(Course::fromEntity).orElseThrow(CourseMissingException::new);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(CourseMissingException::new);
+        return Course.fromEntity(course);
     }
 
     @Transactional
@@ -57,22 +52,18 @@ public class CourseService {
 
     @Transactional
     public Course postCourse(UserDetails userDetails, CourseUpdate course) {
-        if (course.getName().isEmpty()) {
+        if (course.getName().isEmpty() || course.getDescription().isEmpty()) {
             throw new CourseNameMissingException();
         }
+        User teacher = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
 
         CourseEntity courseEntity = CourseEntity.builder()
                 .name(course.getName().get())
-                .desc(course.getDescription().orElse(null))
-                .users(course.getUsers().map(this::usersFrom).orElse(EMPTY_USER_SET))
-                .dates(course.getDates().map(this::datesFrom).orElse(EMPTY_DATE_SET))
-                .ownerEmail(userDetails.getUsername())
-                .courseCode(codeGenerator.generateCode())
+                .description(course.getDescription().get())
+                .teacher(teacher)
                 .build();
 
-        courseRepository.save(courseEntity);
-
-        return Course.fromEntity(courseEntity);
+        return Course.fromEntity(courseRepository.save(courseEntity));
     }
 
     @Transactional
@@ -85,7 +76,9 @@ public class CourseService {
     }
 
     private CourseEntity validateOwner(CourseEntity courseEntity, UserDetails userDetails) {
-        if (!Objects.equals(courseEntity.getOwnerEmail(), userDetails.getUsername())) {
+        User teacher = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+
+        if (!Objects.equals(courseEntity.getTeacher(), teacher)) {
             throw new InvalidOwnerException();
         }
         return courseEntity;
@@ -93,10 +86,9 @@ public class CourseService {
 
     private CourseEntity updateCourse(CourseEntity entity, CourseUpdate update) {
         update.getName().ifPresent(entity::setName);
-        update.getDescription().ifPresent(entity::setDesc);
-        update.getUsers().map(this::usersFrom).ifPresent(entity::setUsers);
+        update.getDescription().ifPresent(entity::setDescription);
+        update.getUsers().map(this::usersFrom).ifPresent(entity::setStudents);
         update.getDates().map(this::datesFrom).ifPresent(entity::setDates);
-        update.getOwnerEmail().ifPresent(entity::setOwnerEmail);
         courseRepository.save(entity);
         return entity;
     }

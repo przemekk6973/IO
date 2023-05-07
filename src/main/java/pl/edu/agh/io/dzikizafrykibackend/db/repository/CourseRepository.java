@@ -8,5 +8,4 @@ import java.util.UUID;
 
 @Repository
 public interface CourseRepository extends JpaRepository<CourseEntity, UUID> {
-    CourseEntity findFirstByCourseCodeEquals(String code);
 }
