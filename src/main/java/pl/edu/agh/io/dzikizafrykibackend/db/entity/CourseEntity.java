@@ -23,39 +23,35 @@ public class CourseEntity {
 
     @Column
     @NotNull
-    private String name;
+    private String courseName;
 
     @Column
     @NotNull
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @JoinColumn(name = "teacher_id")
     private User teacher;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "student_id")
+    @JoinTable(name = "enrollments")
     Set<User> students;
 
-    @ManyToMany
-    @JoinTable(
-            name = "courses_dates",
-            inverseJoinColumns = @JoinColumn(name = "date_id"),
-            joinColumns = @JoinColumn(name = "course_id")
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true, cascade = CascadeType.PERSIST)
     Set<DateEntity> dates;
 
-    public CourseEntity(String name, String description, User teacher) {
-        this.name = name;
+    public CourseEntity(String name, String description, User teacher, Set<DateEntity> dates) {
+        this.courseName = name;
         this.description = description;
         this.teacher = teacher;
+        this.dates = dates;
     }
 
     @Override
     public String toString() {
         return "CourseEntity{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + courseName + '\'' +
                 ", description='" + description + '\'' +
                 ", teacher=" + teacher +
                 ", students=" + students +
@@ -73,13 +69,13 @@ public class CourseEntity {
         }
         CourseEntity that = (CourseEntity) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
+                Objects.equals(courseName, that.courseName) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(teacher, that.teacher);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, teacher);
+        return Objects.hash(id, courseName, description, teacher);
     }
 }

@@ -18,9 +18,7 @@ import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.DateRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.exception.CourseMissingException;
-import pl.edu.agh.io.dzikizafrykibackend.exception.CourseNameMissingException;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
-import pl.edu.agh.io.dzikizafrykibackend.model.CourseUpdate;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
 import pl.edu.agh.io.dzikizafrykibackend.service.CourseService;
 
 import java.util.Optional;
@@ -33,12 +31,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
     private static final String COURSE_NAME = "test";
-    private static final String COURSE_NAME_2 = "test2";
     private static final UUID COURSE_ID = UUID.randomUUID();
     private static final User TEACHER = new User("aaa@bb.cc", "aaa", "bbb", UserRole.TEACHER, null, true, "aaa");
     private static final CourseEntity COURSE_ENTITY = CourseEntity.builder()
             .id(COURSE_ID)
-            .name(COURSE_NAME)
+            .courseName(COURSE_NAME)
             .teacher(TEACHER)
             .build();
     private static final Set<User> EMPTY_STUDENTS_SET = Set.of();
@@ -56,13 +53,13 @@ public class CourseServiceTest {
 
     private static Stream<Arguments> providerForPostTest() {
         return Stream.of(
-                Arguments.of(CourseUpdate.builder()
-                                     .name(Optional.of(COURSE_NAME))
-                                     .description(Optional.of("description"))
-                                     .ownerEmail(Optional.of(TEACHER.getEmail()))
+                Arguments.of(CourseCreationResource.builder()
+                                     .name(COURSE_NAME)
+                                     .description("description")
+                                     .dates(Set.of())
                                      .build(),
                              CourseEntity.builder()
-                                     .name(COURSE_NAME)
+                                     .courseName(COURSE_NAME)
                                      .description("description")
                                      .teacher(TEACHER)
                                      .dates(Set.of())
@@ -101,23 +98,23 @@ public class CourseServiceTest {
         // given
 
         // when
-        courseService.getAllCourses();
+        courseService.getOwnedCourses(TEACHER);
 
         // then
-        verify(courseRepositoryMock).findAll();
+        verify(courseRepositoryMock).findAllByTeacherId(TEACHER.getId());
     }
 
     @Test
     void shouldDeleteCourse() {
         // given
         when(courseRepositoryMock.findById(COURSE_ID)).thenReturn(Optional.ofNullable(COURSE_ENTITY));
-        when(userRepositoryMock.findByEmail(TEACHER.getEmail())).thenReturn(Optional.of(TEACHER));
 
         // when
         courseService.deleteCourse(TEACHER, COURSE_ID);
 
         // then
-        verify(courseRepositoryMock).deleteById(COURSE_ID);
+        assert COURSE_ENTITY != null;
+        verify(courseRepositoryMock).delete(COURSE_ENTITY);
     }
 
     @Test
@@ -131,16 +128,15 @@ public class CourseServiceTest {
 
     @ParameterizedTest
     @MethodSource("providerForPostTest")
-    void shouldPostCourse(CourseUpdate request, CourseEntity expected) {
+    void shouldPostCourse(CourseCreationResource courseCreationResource, CourseEntity expected) {
         // given
         for (DateEntity date : expected.getDates()) {
             when(dateRepositoryMock.save(date)).thenReturn(date);
         }
-        when(userRepositoryMock.findByEmail(TEACHER.getEmail())).thenReturn(Optional.of(TEACHER));
         when(courseRepositoryMock.save(expected)).thenReturn(expected);
 
         // when
-        courseService.postCourse(TEACHER, request);
+        courseService.postCourse(TEACHER, courseCreationResource);
 
         // then
         InOrder io = getIo();
@@ -149,66 +145,6 @@ public class CourseServiceTest {
         }
         io.verify(courseRepositoryMock).save(expected);
         io.verifyNoMoreInteractions();
-    }
-
-    @Test
-    void shouldThrowWhenPostCourseWithoutName() {
-        // given
-        CourseUpdate request = CourseUpdate.builder()
-                .name(Optional.empty())
-                .build();
-
-        // when
-        Assertions.assertThrows(CourseNameMissingException.class, () -> courseService.postCourse(TEACHER, request));
-
-        // then
-        verifyNoInteractions(courseRepositoryMock);
-    }
-
-    @Test
-    void shouldPutCourseOnExistingCourse() {
-        // given
-        CourseEntity courseEntity = CourseEntity.builder()
-                .id(COURSE_ID)
-                .name(COURSE_NAME)
-                .description("")
-                .teacher(TEACHER)
-                .students(EMPTY_STUDENTS_SET)
-                .dates(EMPTY_DATE_SET)
-                .build();
-
-        CourseUpdate courseUpdate = CourseUpdate.builder()
-                .name(Optional.of(COURSE_NAME_2))
-                .build();
-
-        CourseEntity updatedCourseEntity = courseEntity.toBuilder()
-                .name(COURSE_NAME_2)
-                .build();
-
-        when(courseRepositoryMock.findById(COURSE_ID)).thenReturn(Optional.of(courseEntity));
-        when(userRepositoryMock.findByEmail(TEACHER.getEmail())).thenReturn(Optional.of(TEACHER));
-
-        // when
-        Course updatedCourse = courseService.putCourse(TEACHER, COURSE_ID, courseUpdate);
-
-        // then
-        verify(courseRepositoryMock).findById(COURSE_ID);
-        verify(courseRepositoryMock).save(updatedCourseEntity);
-
-        Assertions.assertEquals(COURSE_ID, updatedCourse.getCourseId());
-        Assertions.assertEquals(COURSE_NAME_2, updatedCourse.getName());
-    }
-
-    @Test
-    void shouldThrowWhenPutCourseOnNonexistentCourse() {
-        // given
-        CourseUpdate courseUpdate = CourseUpdate.builder()
-                .name(Optional.of(COURSE_NAME))
-                .build();
-
-        // then
-        Assertions.assertThrows(CourseMissingException.class,
-                                () -> courseService.putCourse(TEACHER, COURSE_ID, courseUpdate));
     }
 
     private InOrder getIo() {
