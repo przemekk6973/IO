@@ -43,6 +43,8 @@ public class SecurityConfig {
 //                .antMatchers("/demo-security/secured-endpoint").hasRole(UserRole.TEACHER.name())
                 .anyRequest().authenticated()
                 .and()
+                .cors()
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 
 @RestController
@@ -17,7 +18,9 @@ public class DemoSecurityController {
     @Secured({UserRole.ROLE_TEACHER})
     public ResponseEntity<String> getDemoTeacherSecuredHello(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = (User) userDetails;
         System.out.println(userDetails.toString());
+        System.out.println(user);
         return ResponseEntity.ok("Hello teacher!");
     }
 

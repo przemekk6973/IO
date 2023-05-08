@@ -2,6 +2,7 @@ package pl.edu.agh.io.dzikizafrykibackend.it.client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
@@ -19,6 +20,7 @@ public class Retrofit2ClientFactory {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(JacksonConverterFactory.create(
                         new ObjectMapper()
+                                .registerModule(new JSR310Module())
                                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 ));
     }

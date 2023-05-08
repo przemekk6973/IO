@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
+import pl.edu.agh.io.dzikizafrykibackend.exception.DuplicateUserException;
 import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationRequestResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.AuthenticationResponseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.RegisterRequestResource;
@@ -30,13 +31,15 @@ public class AuthenticationService {
 
     public AuthenticationResponseResource register(RegisterRequestResource registerRequestResource) {
         User newUser = new User(registerRequestResource.getEmail(),
-                                registerRequestResource.getFirstname(),
-                                registerRequestResource.getLastname(),
+                                registerRequestResource.getFirstName(),
+                                registerRequestResource.getLastName(),
                                 registerRequestResource.getRole(),
                                 registerRequestResource.getIndexNumber(),
                                 true,
                                 passwordEncoder.encode(registerRequestResource.getPassword()));
-
+        if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
+            throw new DuplicateUserException();
+        }
         userRepository.save(newUser);
         return new AuthenticationResponseResource(jwtService.generateToken(newUser));
     }
