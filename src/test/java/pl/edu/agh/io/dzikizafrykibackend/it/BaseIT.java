@@ -10,6 +10,7 @@ import org.testcontainers.lifecycle.Startables;
 import pl.edu.agh.io.dzikizafrykibackend.BackendApplication;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
+import pl.edu.agh.io.dzikizafrykibackend.db.repository.DateRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.it.client.RetrofitClient;
 import pl.edu.agh.io.dzikizafrykibackend.it.dsl.IdentityProviderDsl;
@@ -41,9 +42,12 @@ public class BaseIT {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private DateRepository dateRepository;
 
     @DynamicPropertySource
     public static void setupThings(DynamicPropertyRegistry registry) {
@@ -58,7 +62,8 @@ public class BaseIT {
         return new TestDsl(
                 port,
                 userRepository,
-                courseRepository
+                courseRepository,
+                dateRepository
         );
     }
 
