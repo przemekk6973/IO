@@ -52,21 +52,24 @@ public class User implements UserDetails {
     private String hashedPassword;
 
     // for teacher
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "teacher", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "teacher", orphanRemoval = true)
     Set<CourseEntity> ownedCourses;
 
     // for students
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "students")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "students")
     Set<CourseEntity> assignedCourses;
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "dates_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "date_id")
-    )
-    Set<DateEntity> userDates;
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "dates_users",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "date_id")
+//    )
+//    Set<DateEntity> userDates;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    Set<UserPreferencesEntity> userPreferences;
 
     public User(
             String email,

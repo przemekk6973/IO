@@ -41,4 +41,5 @@ public class Course {
                 .dates(entity.getDates().stream().map(DateResource::fromEntity).collect(Collectors.toSet()))
                 .build();
     }
+
 }

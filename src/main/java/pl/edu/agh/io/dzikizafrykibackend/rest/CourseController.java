@@ -7,6 +7,8 @@ import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseEnrollResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.UserPreferenceResource;
 import pl.edu.agh.io.dzikizafrykibackend.service.CourseService;
 
 import javax.validation.Valid;
@@ -51,5 +53,15 @@ public class CourseController {
     public void deleteCourse(Authentication authentication, @PathVariable UUID courseId) {
         User userContext = (User) authentication.getPrincipal();
         courseService.deleteCourse(userContext, courseId);
+    }
+
+    @PostMapping(value = "/enroll", consumes = "application/json", produces = "application/json")
+    @Secured({UserRole.ROLE_STUDENT})
+    public UserPreferenceResource enrollToCourse(
+            Authentication authentication,
+            @Valid @RequestBody CourseEnrollResource courseEnrollResource
+    ) {
+        User userContext = (User) authentication.getPrincipal();
+        return courseService.enrollToCourse(userContext, courseEnrollResource);
     }
 }

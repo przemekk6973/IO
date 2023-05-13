@@ -2,16 +2,12 @@ package pl.edu.agh.io.dzikizafrykibackend.it;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
-import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
-import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.*;
 import pl.edu.agh.io.dzikizafrykibackend.util.WeekEnum;
 
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -21,6 +17,7 @@ public class CourseIT extends BaseIT {
     public void setup() throws IOException {
         dsl().purgeEntities();
         dsl().setupUser(TEACHER1_ID);
+        dsl().setupUser(STUDENT1_ID);
     }
 
     @Test

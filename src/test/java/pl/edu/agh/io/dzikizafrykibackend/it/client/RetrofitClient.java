@@ -36,4 +36,6 @@ public interface RetrofitClient {
     @DELETE("course/{courseId}")
     Call<Void> deleteCourse(@Path("courseId") UUID courseId);
 
+    @POST("course/enroll")
+    Call<UserPreferenceResource> enrollToCourse(@Body CourseEnrollResource courseEnrollResource);
 }
