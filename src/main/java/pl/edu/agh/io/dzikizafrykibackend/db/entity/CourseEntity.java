@@ -40,7 +40,7 @@ public class CourseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true, cascade = CascadeType.PERSIST)
     Set<DateEntity> dates;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "preferredCourse", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "preferredCourse", orphanRemoval = true, cascade = CascadeType.PERSIST)
     Set<UserPreferencesEntity> userPreferences;
 
 

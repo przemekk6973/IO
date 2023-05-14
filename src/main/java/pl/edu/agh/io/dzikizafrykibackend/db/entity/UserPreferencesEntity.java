@@ -18,15 +18,15 @@ public class UserPreferencesEntity {
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "preferences_user", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "preferences_course", nullable = false)
     private CourseEntity preferredCourse;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_preferred_dates",
             joinColumns = @JoinColumn(name = "preferences_id"),

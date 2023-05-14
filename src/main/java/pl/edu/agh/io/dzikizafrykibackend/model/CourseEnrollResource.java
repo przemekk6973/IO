@@ -24,7 +24,7 @@ public class CourseEnrollResource {
     @NotNull
     Set<DateResource> dates;
 
-    @Size(max = 200, message = "Max 200 characters")
-    String studentComment;
+//    @Size(max = 200, message = "Max 200 characters")
+//    String studentComment;
 
 }

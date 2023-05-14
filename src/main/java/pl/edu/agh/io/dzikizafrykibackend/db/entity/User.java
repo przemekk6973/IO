@@ -52,11 +52,11 @@ public class User implements UserDetails {
     private String hashedPassword;
 
     // for teacher
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "teacher", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "teacher", orphanRemoval = true)
     Set<CourseEntity> ownedCourses;
 
     // for students
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "students")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "students")
     Set<CourseEntity> assignedCourses;
 
 
@@ -68,7 +68,7 @@ public class User implements UserDetails {
 //    )
 //    Set<DateEntity> userDates;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     Set<UserPreferencesEntity> userPreferences;
 
     public User(
