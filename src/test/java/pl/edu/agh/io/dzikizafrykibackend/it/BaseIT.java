@@ -11,7 +11,6 @@ import pl.edu.agh.io.dzikizafrykibackend.BackendApplication;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.DateRepository;
-import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserPreferencesRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.it.client.RetrofitClient;
 import pl.edu.agh.io.dzikizafrykibackend.it.dsl.IdentityProviderDsl;
@@ -50,9 +49,6 @@ public class BaseIT {
     @Autowired
     private DateRepository dateRepository;
 
-    @Autowired
-    private UserPreferencesRepository userPreferencesRepository;
-
     @DynamicPropertySource
     public static void setupThings(DynamicPropertyRegistry registry) {
         Startables.deepStart(postgreSQLContainer).join();
@@ -67,8 +63,7 @@ public class BaseIT {
                 port,
                 userRepository,
                 courseRepository,
-                dateRepository,
-                userPreferencesRepository
+                dateRepository
         );
     }
 

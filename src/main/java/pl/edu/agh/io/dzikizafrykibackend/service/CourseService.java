@@ -6,15 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.CourseEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.DateEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
-import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserPreferencesEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
-import pl.edu.agh.io.dzikizafrykibackend.db.repository.DateRepository;
-import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserPreferencesRepository;
-import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.exception.CourseMissingException;
 import pl.edu.agh.io.dzikizafrykibackend.exception.InvalidOwnerException;
-import pl.edu.agh.io.dzikizafrykibackend.exception.UserMissingException;
-import pl.edu.agh.io.dzikizafrykibackend.model.*;
+import pl.edu.agh.io.dzikizafrykibackend.exception.ValidationException;
+import pl.edu.agh.io.dzikizafrykibackend.model.Course;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
 
 import java.util.List;
 import java.util.Set;
@@ -26,9 +24,6 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final DateRepository dateRepository;
-    private final UserRepository userRepository;
-    private final UserPreferencesRepository userPreferencesRepository;
 
 
     @Transactional
@@ -70,20 +65,25 @@ public class CourseService {
     }
 
     @Transactional
-    public UserPreferenceResource enrollToCourse(User userContext, CourseEnrollResource courseEnrollResource) {
-        UUID courseId = courseEnrollResource.getCourseId();
+    public Course getCourseAsTeacher(User userContext, UUID courseId) {
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ValidationException("Course does not exist."));
 
-        CourseEntity courseEntity = courseRepository.findById(courseId).orElseThrow(CourseMissingException::new);
+        if (course.getTeacher().equals(userContext)) {
+            return Course.fromEntity(course);
+        } else {
+            throw new ValidationException("You do not have access to this course.");
+        }
+    }
 
-        Set<DateEntity> dateEntities = courseEnrollResource.getDates().stream()
-                .map(x -> DateResource.toEntity(x, courseEntity))
-                .collect(Collectors.toSet());
-        dateRepository.saveAll(dateEntities);
+    public Course getCourseAsStudent(User userContext, UUID courseId) {
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ValidationException("Course does not exist."));
 
-        User user = userRepository.findByEmail(userContext.getEmail()).orElseThrow(UserMissingException::new);
-
-        UserPreferencesEntity userPreferencesEntity = UserPreferenceResource.toEntity(user, courseEntity, dateEntities);
-
-        return UserPreferenceResource.fromEntity(userPreferencesRepository.save(userPreferencesEntity));
+        if (course.getStudents().contains(userContext)) {
+            return Course.fromEntity(course);
+        } else {
+            throw new ValidationException("You do not have access to this course.");
+        }
     }
 }

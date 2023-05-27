@@ -60,16 +60,13 @@ public class User implements UserDetails {
     Set<CourseEntity> assignedCourses;
 
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "dates_users",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "date_id")
-//    )
-//    Set<DateEntity> userDates;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    Set<UserPreferencesEntity> userPreferences;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "dates_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "date_id")
+    )
+    Set<DateEntity> userDates;
 
     public User(
             String email,

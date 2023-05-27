@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "courses_table")
+@Table(name = "courses")
 public class CourseEntity {
 
     @Id
@@ -39,10 +39,6 @@ public class CourseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true, cascade = CascadeType.PERSIST)
     Set<DateEntity> dates;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "preferredCourse", orphanRemoval = true, cascade = CascadeType.PERSIST)
-    Set<UserPreferencesEntity> userPreferences;
-
 
     public CourseEntity(String name, String description, User teacher, Set<DateEntity> dates) {
         this.courseName = name;

@@ -42,5 +42,4 @@ public class DateResource {
                 .course(course)
                 .build();
     }
-
 }

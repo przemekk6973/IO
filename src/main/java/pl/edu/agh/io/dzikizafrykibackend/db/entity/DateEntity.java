@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 
 @Getter
@@ -17,12 +16,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "dates_table")
+@Table(name = "dates")
 public class DateEntity {
 
     @Id
     @GeneratedValue
-    private UUID id;
+    private int id;
 
     @Column(name = "weekDay")
     @Enumerated(EnumType.STRING)
@@ -41,12 +40,8 @@ public class DateEntity {
     @JoinColumn(name = "course_id", nullable = false)
     CourseEntity course;
 
-//    @ManyToMany(mappedBy = "userDates")
-//    Set<User> users;
-
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "preferredDates")
-    Set<UserPreferencesEntity> userPreferences;
-
+    @ManyToMany(mappedBy = "userDates")
+    Set<User> users;
 
     public DateEntity(WeekEnum weekDay, LocalTime startTime, LocalTime endTime, CourseEntity course) {
         this.weekDay = weekDay;

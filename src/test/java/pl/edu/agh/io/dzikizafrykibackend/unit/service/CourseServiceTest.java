@@ -10,7 +10,10 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.edu.agh.io.dzikizafrykibackend.db.entity.*;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.CourseEntity;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.DateEntity;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.DateRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
@@ -37,8 +40,6 @@ public class CourseServiceTest {
             .build();
     private static final Set<User> EMPTY_STUDENTS_SET = Set.of();
     private static final Set<DateEntity> EMPTY_DATE_SET = Set.of();
-
-    private static final Set<UserPreferencesEntity> EMPTY_PREFERENCES_SET = Set.of();
 
     @Mock
     private CourseRepository courseRepositoryMock;
@@ -71,7 +72,7 @@ public class CourseServiceTest {
     void shouldGetCourse() {
         // given
         when(courseRepositoryMock.findById(COURSE_ID)).thenReturn(Optional.of(
-                new CourseEntity(COURSE_ID, COURSE_NAME, "", TEACHER, EMPTY_STUDENTS_SET, EMPTY_DATE_SET, EMPTY_PREFERENCES_SET)
+                new CourseEntity(COURSE_ID, COURSE_NAME, "", TEACHER, EMPTY_STUDENTS_SET, EMPTY_DATE_SET)
         ));
 
         // when
