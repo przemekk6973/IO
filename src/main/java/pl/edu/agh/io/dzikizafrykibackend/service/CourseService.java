@@ -11,8 +11,8 @@ import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.exception.CourseMissingException;
 import pl.edu.agh.io.dzikizafrykibackend.exception.InvalidOwnerException;
 import pl.edu.agh.io.dzikizafrykibackend.exception.ValidationException;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
 
 import java.util.List;
@@ -29,22 +29,25 @@ public class CourseService {
 
 
     @Transactional
-    public Course getCourse(UUID courseId) {
+    public CourseResource getCourse(UUID courseId) {
         CourseEntity course = courseRepository.findById(courseId).orElseThrow(CourseMissingException::new);
-        return Course.fromEntity(course);
+        return CourseResource.fromEntity(course);
     }
 
     @Transactional
-    public List<Course> getOwnedCoursesAsTeacher(User userContext) {
-        return courseRepository.findAllByTeacherId(userContext.getId()).stream().map(Course::fromEntity).toList();
+    public List<CourseResource> getOwnedCoursesAsTeacher(User userContext) {
+        return courseRepository.findAllByTeacherId(userContext.getId())
+                .stream()
+                .map(CourseResource::fromEntity)
+                .toList();
     }
 
-    public List<Course> getAssignedCoursesAsStudent(User userContext) {
+    public List<CourseResource> getAssignedCoursesAsStudent(User userContext) {
         return userRepository.findById(userContext.getId())
                 .orElseThrow()
                 .getAssignedCourses()
                 .stream()
-                .map(Course::fromEntity)
+                .map(CourseResource::fromEntity)
                 .toList();
     }
 
@@ -59,7 +62,7 @@ public class CourseService {
     }
 
     @Transactional
-    public Course postCourse(User userContext, CourseCreationResource courseCreationResource) {
+    public CourseResource postCourse(User userContext, CourseCreationResource courseCreationResource) {
         CourseEntity courseEntity = CourseEntity.builder()
                 .courseName(courseCreationResource.getName())
                 .description(courseCreationResource.getDescription())
@@ -73,28 +76,28 @@ public class CourseService {
 
         courseEntity.setDates(dates);
 
-        return Course.fromEntity(courseRepository.save(courseEntity));
+        return CourseResource.fromEntity(courseRepository.save(courseEntity));
     }
 
     @Transactional
-    public Course getCourseAsTeacher(User userContext, UUID courseId) {
+    public CourseResource getCourseAsTeacher(User userContext, UUID courseId) {
         CourseEntity course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ValidationException("Course does not exist."));
 
         if (course.getTeacher().equals(userContext)) {
-            return Course.fromEntity(course);
+            return CourseResource.fromEntity(course);
         } else {
             throw new ValidationException("You do not have access to this course.");
         }
     }
 
     @Transactional
-    public Course getCourseAsStudent(User userContext, UUID courseId) {
+    public CourseResource getCourseAsStudent(User userContext, UUID courseId) {
         CourseEntity course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ValidationException("Course does not exist."));
 
         if (course.getStudents().contains(userContext)) {
-            return Course.fromEntity(course);
+            return CourseResource.fromEntity(course);
         } else {
             throw new ValidationException("You do not have access to this course.");
         }

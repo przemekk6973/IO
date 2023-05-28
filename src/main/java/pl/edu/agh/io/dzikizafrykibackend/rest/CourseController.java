@@ -5,8 +5,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
 import pl.edu.agh.io.dzikizafrykibackend.service.CourseService;
 
 import javax.validation.Valid;
@@ -25,7 +25,7 @@ public class CourseController {
 
     @GetMapping("/{courseId}")
     @Secured({UserRole.ROLE_TEACHER, UserRole.ROLE_STUDENT})
-    public Course getCourse(Authentication authentication, @PathVariable UUID courseId) {
+    public CourseResource getCourse(Authentication authentication, @PathVariable UUID courseId) {
         User userContext = (User) authentication.getPrincipal();
         return switch (userContext.getRole()) {
             case STUDENT -> courseService.getCourseAsStudent(userContext, courseId);
@@ -35,7 +35,7 @@ public class CourseController {
 
     @GetMapping
     @Secured({UserRole.ROLE_TEACHER, UserRole.ROLE_STUDENT})
-    public List<Course> getMyCourses(Authentication authentication) {
+    public List<CourseResource> getMyCourses(Authentication authentication) {
         User userContext = (User) authentication.getPrincipal();
         return switch (userContext.getRole()) {
             case STUDENT -> courseService.getAssignedCoursesAsStudent(userContext);
@@ -45,7 +45,7 @@ public class CourseController {
 
     @PostMapping(value = "/create", consumes = "application/json", produces = "application/json")
     @Secured({UserRole.ROLE_TEACHER})
-    public Course postCourse(
+    public CourseResource postCourse(
             Authentication authentication,
             @Valid @RequestBody CourseCreationResource courseCreationResource
     ) {

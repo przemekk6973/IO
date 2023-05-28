@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.StudentPreferencesResource;
 import pl.edu.agh.io.dzikizafrykibackend.service.CourseEnrollmentService;
 
@@ -26,7 +26,7 @@ public class CourseEnrollmentController {
 
     @PostMapping("/enroll/{courseId}")
     @Secured({UserRole.ROLE_STUDENT})
-    public Course getCourse(Authentication authentication, @PathVariable UUID courseId) {
+    public CourseResource getCourse(Authentication authentication, @PathVariable UUID courseId) {
         User userContext = (User) authentication.getPrincipal();
         return courseEnrollmentService.enrollStudent(userContext, courseId);
     }
