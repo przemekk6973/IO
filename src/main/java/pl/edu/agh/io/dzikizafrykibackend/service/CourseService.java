@@ -7,6 +7,7 @@ import pl.edu.agh.io.dzikizafrykibackend.db.entity.CourseEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.DateEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
+import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.exception.CourseMissingException;
 import pl.edu.agh.io.dzikizafrykibackend.exception.InvalidOwnerException;
 import pl.edu.agh.io.dzikizafrykibackend.exception.ValidationException;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
 
     @Transactional
@@ -33,8 +35,17 @@ public class CourseService {
     }
 
     @Transactional
-    public List<Course> getOwnedCourses(User userContext) {
+    public List<Course> getOwnedCoursesAsTeacher(User userContext) {
         return courseRepository.findAllByTeacherId(userContext.getId()).stream().map(Course::fromEntity).toList();
+    }
+
+    public List<Course> getAssignedCoursesAsStudent(User userContext) {
+        return userRepository.findById(userContext.getId())
+                .orElseThrow()
+                .getAssignedCourses()
+                .stream()
+                .map(Course::fromEntity)
+                .toList();
     }
 
     @Transactional
@@ -55,7 +66,8 @@ public class CourseService {
                 .teacher(userContext)
                 .build();
 
-        Set<DateEntity> dates = courseCreationResource.getDates().stream()
+        Set<DateEntity> dates = courseCreationResource.getDates()
+                .stream()
                 .map(dateResource -> DateResource.toEntity(dateResource, courseEntity))
                 .collect(Collectors.toSet());
 
@@ -76,6 +88,7 @@ public class CourseService {
         }
     }
 
+    @Transactional
     public Course getCourseAsStudent(User userContext, UUID courseId) {
         CourseEntity course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ValidationException("Course does not exist."));
@@ -86,4 +99,5 @@ public class CourseService {
             throw new ValidationException("You do not have access to this course.");
         }
     }
+
 }
