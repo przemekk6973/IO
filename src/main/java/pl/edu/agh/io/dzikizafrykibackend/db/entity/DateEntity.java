@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Getter
@@ -21,7 +22,7 @@ public class DateEntity {
 
     @Id
     @GeneratedValue
-    private int id;
+    private UUID id;
 
     @Column(name = "weekDay")
     @Enumerated(EnumType.STRING)

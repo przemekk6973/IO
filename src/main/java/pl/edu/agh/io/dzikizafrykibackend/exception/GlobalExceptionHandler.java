@@ -29,4 +29,9 @@ public class GlobalExceptionHandler {
         errorResponse.put("errors", errors);
         return errorResponse;
     }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<String> handleRuntimeExceptions(RuntimeException runtimeException) {
+        return new ResponseEntity<>(runtimeException.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -7,8 +7,10 @@ import pl.edu.agh.io.dzikizafrykibackend.db.entity.CourseEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.DateEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
+import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.exception.CourseMissingException;
 import pl.edu.agh.io.dzikizafrykibackend.exception.InvalidOwnerException;
+import pl.edu.agh.io.dzikizafrykibackend.exception.ValidationException;
 import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
 
     @Transactional
@@ -32,8 +35,17 @@ public class CourseService {
     }
 
     @Transactional
-    public List<Course> getOwnedCourses(User userContext) {
+    public List<Course> getOwnedCoursesAsTeacher(User userContext) {
         return courseRepository.findAllByTeacherId(userContext.getId()).stream().map(Course::fromEntity).toList();
+    }
+
+    public List<Course> getAssignedCoursesAsStudent(User userContext) {
+        return userRepository.findById(userContext.getId())
+                .orElseThrow()
+                .getAssignedCourses()
+                .stream()
+                .map(Course::fromEntity)
+                .toList();
     }
 
     @Transactional
@@ -54,7 +66,8 @@ public class CourseService {
                 .teacher(userContext)
                 .build();
 
-        Set<DateEntity> dates = courseCreationResource.getDates().stream()
+        Set<DateEntity> dates = courseCreationResource.getDates()
+                .stream()
                 .map(dateResource -> DateResource.toEntity(dateResource, courseEntity))
                 .collect(Collectors.toSet());
 
@@ -62,4 +75,29 @@ public class CourseService {
 
         return Course.fromEntity(courseRepository.save(courseEntity));
     }
+
+    @Transactional
+    public Course getCourseAsTeacher(User userContext, UUID courseId) {
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ValidationException("Course does not exist."));
+
+        if (course.getTeacher().equals(userContext)) {
+            return Course.fromEntity(course);
+        } else {
+            throw new ValidationException("You do not have access to this course.");
+        }
+    }
+
+    @Transactional
+    public Course getCourseAsStudent(User userContext, UUID courseId) {
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ValidationException("Course does not exist."));
+
+        if (course.getStudents().contains(userContext)) {
+            return Course.fromEntity(course);
+        } else {
+            throw new ValidationException("You do not have access to this course.");
+        }
+    }
+
 }

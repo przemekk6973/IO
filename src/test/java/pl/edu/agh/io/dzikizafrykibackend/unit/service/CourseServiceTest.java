@@ -98,7 +98,7 @@ public class CourseServiceTest {
         // given
 
         // when
-        courseService.getOwnedCourses(TEACHER);
+        courseService.getOwnedCoursesAsTeacher(TEACHER);
 
         // then
         verify(courseRepositoryMock).findAllByTeacherId(TEACHER.getId());

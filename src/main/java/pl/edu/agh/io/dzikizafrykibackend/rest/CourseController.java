@@ -25,15 +25,22 @@ public class CourseController {
 
     @GetMapping("/{courseId}")
     @Secured({UserRole.ROLE_TEACHER, UserRole.ROLE_STUDENT})
-    public Course getCourse(@PathVariable UUID courseId) {
-        return courseService.getCourse(courseId);
+    public Course getCourse(Authentication authentication, @PathVariable UUID courseId) {
+        User userContext = (User) authentication.getPrincipal();
+        return switch (userContext.getRole()) {
+            case STUDENT -> courseService.getCourseAsStudent(userContext, courseId);
+            case TEACHER -> courseService.getCourseAsTeacher(userContext, courseId);
+        };
     }
 
     @GetMapping
-    @Secured({UserRole.ROLE_TEACHER})
-    public List<Course> getOwnedCourses(Authentication authentication) {
+    @Secured({UserRole.ROLE_TEACHER, UserRole.ROLE_STUDENT})
+    public List<Course> getMyCourses(Authentication authentication) {
         User userContext = (User) authentication.getPrincipal();
-        return courseService.getOwnedCourses(userContext);
+        return switch (userContext.getRole()) {
+            case STUDENT -> courseService.getAssignedCoursesAsStudent(userContext);
+            case TEACHER -> courseService.getOwnedCoursesAsTeacher(userContext);
+        };
     }
 
     @PostMapping(value = "/create", consumes = "application/json", produces = "application/json")
