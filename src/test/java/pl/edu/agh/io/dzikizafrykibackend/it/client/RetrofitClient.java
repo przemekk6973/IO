@@ -25,17 +25,17 @@ public interface RetrofitClient {
     Call<String> getDemoStudentSecuredHello();
 
     @GET("/course")
-    Call<List<Course>> getOwnedCourses();
+    Call<List<CourseResource>> getOwnedCourses();
 
     @GET("/course/{courseId}")
-    Call<Course> getCourse(@Path("courseId") UUID courseId);
+    Call<CourseResource> getCourse(@Path("courseId") UUID courseId);
 
     @POST("/course/create")
-    Call<Course> postCourse(@Body CourseCreationResource courseCreationResource);
+    Call<CourseResource> postCourse(@Body CourseCreationResource courseCreationResource);
 
     @DELETE("course/{courseId}")
     Call<Void> deleteCourse(@Path("courseId") UUID courseId);
 
     @POST("course-enrollment/enroll/{courseId}")
-    Call<Course> postEnroll(@Path("courseId") UUID courseId);
+    Call<CourseResource> postEnroll(@Path("courseId") UUID courseId);
 }

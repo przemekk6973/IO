@@ -2,8 +2,8 @@ package pl.edu.agh.io.dzikizafrykibackend.it;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
 import pl.edu.agh.io.dzikizafrykibackend.util.WeekEnum;
 
@@ -45,7 +45,7 @@ public class CourseIT extends BaseIT {
     @Test
     void shouldCreateCourse() throws IOException {
         // when
-        Course course = dsl().useClientAsUser(TEACHER1_ID).postCourse(courseCreationResource1).execute().body();
+        CourseResource course = dsl().useClientAsUser(TEACHER1_ID).postCourse(courseCreationResource1).execute().body();
 
         // then
         assertThat(course).isNotNull();
@@ -62,18 +62,21 @@ public class CourseIT extends BaseIT {
         dsl().useClientAsUser(TEACHER1_ID).postCourse(courseCreationResource2).execute().body();
 
         // then
-        List<Course> courses = dsl().useClientAsUser(TEACHER1_ID).getOwnedCourses().execute().body();
+        List<CourseResource> courses = dsl().useClientAsUser(TEACHER1_ID).getOwnedCourses().execute().body();
         assertThat(courses).hasSize(2);
     }
 
     @Test
     void shouldGetSingleCourseAsTeacher() throws IOException {
         // when
-        Course createdCourse = dsl().useClientAsUser(TEACHER1_ID).postCourse(courseCreationResource1).execute().body();
+        CourseResource createdCourse = dsl().useClientAsUser(TEACHER1_ID)
+                .postCourse(courseCreationResource1)
+                .execute()
+                .body();
 
         // then
         assert createdCourse != null;
-        Course courseResponse = dsl().useClientAsUser(TEACHER1_ID)
+        CourseResource courseResponse = dsl().useClientAsUser(TEACHER1_ID)
                 .getCourse(createdCourse.getCourseId())
                 .execute()
                 .body();
@@ -84,12 +87,18 @@ public class CourseIT extends BaseIT {
     @Test
     void shouldGetSingleCourseAsStudent() throws IOException {
         // given
-        Course createdCourse = dsl().useClientAsUser(TEACHER1_ID).postCourse(courseCreationResource1).execute().body();
+        CourseResource createdCourse = dsl().useClientAsUser(TEACHER1_ID)
+                .postCourse(courseCreationResource1)
+                .execute()
+                .body();
         assert createdCourse != null;
         dsl().useClientAsUser(STUDENT1_ID).postEnroll(createdCourse.getCourseId()).execute();
 
         // when
-        Course course = dsl().useClientAsUser(STUDENT1_ID).getCourse(createdCourse.getCourseId()).execute().body();
+        CourseResource course = dsl().useClientAsUser(STUDENT1_ID)
+                .getCourse(createdCourse.getCourseId())
+                .execute()
+                .body();
 
         // then
         assertThat(course.getCourseId()).isEqualTo(createdCourse.getCourseId());

@@ -10,7 +10,7 @@ import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.CourseRepository;
 import pl.edu.agh.io.dzikizafrykibackend.db.repository.UserRepository;
 import pl.edu.agh.io.dzikizafrykibackend.exception.ValidationException;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.StudentPreferencesResource;
 
 import java.util.HashSet;
@@ -33,12 +33,12 @@ public class CourseEnrollmentService {
     }
 
     @Transactional
-    public Course enrollStudent(User userContext, UUID courseId) {
+    public CourseResource enrollStudent(User userContext, UUID courseId) {
         CourseEntity course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ValidationException("Course does not exist."));
 
         course.getStudents().add(userContext);
-        return Course.fromEntity(courseRepository.save(course));
+        return CourseResource.fromEntity(courseRepository.save(course));
     }
 
     @Transactional

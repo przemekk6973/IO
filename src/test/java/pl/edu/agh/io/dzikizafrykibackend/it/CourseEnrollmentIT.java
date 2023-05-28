@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.CourseEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
-import pl.edu.agh.io.dzikizafrykibackend.model.Course;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseCreationResource;
+import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
 import pl.edu.agh.io.dzikizafrykibackend.model.DateResource;
 import pl.edu.agh.io.dzikizafrykibackend.util.WeekEnum;
 
@@ -38,7 +38,10 @@ public class CourseEnrollmentIT extends BaseIT {
     @Transactional
     void shouldEnroll() throws IOException {
         // given
-        Course createdCourse = dsl().useClientAsUser(TEACHER1_ID).postCourse(courseCreationResource).execute().body();
+        CourseResource createdCourse = dsl().useClientAsUser(TEACHER1_ID)
+                .postCourse(courseCreationResource)
+                .execute()
+                .body();
 
         // when
         assert createdCourse != null;
