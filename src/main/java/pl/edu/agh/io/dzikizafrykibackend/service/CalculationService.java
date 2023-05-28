@@ -62,16 +62,16 @@ public class CalculationService {
     public CalculationResults getResults(User userContext, UUID courseId) {
         CourseEntity course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ValidationException("Course does not exist."));
-        if (course.isCalculated()) {
-            throw new ValidationException("Course is already calculated.");
+        if (!course.isCalculated()) {
+            throw new ValidationException("Course is not yet calculated.");
         }
         switch (userContext.getRole()) {
-            case STUDENT -> {
+            case TEACHER -> {
                 if (!course.getTeacher().equals(userContext)) {
                     throw new ValidationException("You do not have access to this course.");
                 }
             }
-            case TEACHER -> {
+            case STUDENT -> {
                 if (!course.getStudents().contains(userContext)) {
                     throw new ValidationException("You do not have access to this course.");
                 }
