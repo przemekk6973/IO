@@ -36,6 +36,11 @@ public class CourseEntity {
 
     @Column
     @NotNull
+    private int groupCount;
+
+
+    @Column
+    @NotNull
     private boolean isCalculated = false;
 
     @Type(type = "jsonb")
