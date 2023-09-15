@@ -38,6 +38,9 @@ public class CourseEntity {
     @NotNull
     private int groupCount;
 
+    @Column
+    private String comments;
+
 
     @Column
     @NotNull
@@ -74,7 +77,18 @@ public class CourseEntity {
         this.teacher = teacher;
         this.students = students;
         this.dates = dates;
+        this.comments = comments;
+
     }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
 
     @Override
     public String toString() {
@@ -87,6 +101,7 @@ public class CourseEntity {
                 ", teacher=" + teacher +
                 ", students=" + students +
                 ", dates=" + dates +
+                ", comments=" + comments +
                 '}';
     }
 

@@ -33,13 +33,17 @@ public class CourseEnrollmentService {
     }
 
     @Transactional
-    public CourseResource enrollStudent(User userContext, UUID courseId) {
+    public CourseEntity enrollStudent(User userContext, UUID courseId, String comments) {
         CourseEntity course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ValidationException("Course does not exist."));
 
+        // Dodaj komentarz do kursu
+        course.setComments(comments);
+
         course.getStudents().add(userContext);
-        return CourseResource.fromEntity(courseRepository.save(course));
+        return courseRepository.save(course);
     }
+
 
     @Transactional
     public StudentPreferencesResource saveStudentPreferences(

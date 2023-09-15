@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.agh.io.dzikizafrykibackend.db.entity.CourseEntity;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.User;
 import pl.edu.agh.io.dzikizafrykibackend.db.entity.UserRole;
 import pl.edu.agh.io.dzikizafrykibackend.model.CourseResource;
@@ -26,10 +27,16 @@ public class CourseEnrollmentController {
 
     @PostMapping("/enroll/{courseId}")
     @Secured({UserRole.ROLE_STUDENT})
-    public CourseResource getCourse(Authentication authentication, @PathVariable UUID courseId) {
+    public CourseResource getCourse(
+            Authentication authentication,
+            @PathVariable UUID courseId,
+            @RequestParam(required = false) String comments // Dodaj parametr komentarza
+    ) {
         User userContext = (User) authentication.getPrincipal();
-        return courseEnrollmentService.enrollStudent(userContext, courseId);
+        CourseEntity course = courseEnrollmentService.enrollStudent(userContext, courseId, comments);
+        return CourseResource.fromEntity(course);
     }
+
 
     @PostMapping("/preferences")
     @Secured({UserRole.ROLE_STUDENT})
